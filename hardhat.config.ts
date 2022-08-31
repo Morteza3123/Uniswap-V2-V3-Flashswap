@@ -3,7 +3,7 @@ import "@nomicfoundation/hardhat-toolbox";
 require('hardhat-ethernal');
 require('dotenv').config()
 
-const config: HardhatUserConfig = {
+module.exports = {
   solidity: "0.8.9",
   networks: {
     hardhat: {
@@ -13,6 +13,16 @@ const config: HardhatUserConfig = {
       }
     },
   },
+//   mocha: {
+//     timeout: 2000,
+// },
 };
 
-export default config;
+// module.exports = {
+//   ethernal: {
+//       email: process.env.ETHERNAL_EMAIL,
+//       password: process.env.ETHERNAL_PASSWORD,
+//   }
+// };
+
+// export default config;
