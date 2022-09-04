@@ -7,7 +7,7 @@ const toWei = (i: string) => ethers.utils.parseEther(i);
 const toEther = (i: any) => ethers.utils.formatEther(i);
 
 describe("uniswapv2", function () {
-  let daiAddress: string = "0x6b175474e89094c44da98b954eedeac495271d0f";
+  let daiAddress: string = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
   let wethAddress: string = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
   let uniAddress: string = "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984";
   // We define a fixture to reuse the same setup in every test.
@@ -30,21 +30,23 @@ describe("uniswapv2", function () {
       );
       const amountsOut = await uniswapv2.getAmountOutMin(
         wethAddress,
-        uniAddress,
+        daiAddress,
         toWei("1")
       );
       console.log(toEther(amountsOut));
       const ownerBalance = await ethers.provider.getBalance(owner.address);
       console.log(toEther(ownerBalance));
-      await owner.sendTransaction({ to: uniswapv2.address, value: toWei("1"), gasLimit:1000000 });
-      const transaction = await uniswapv2.quickswap(
-        daiAddress,
-        [wethAddress, daiAddress],
-        { gasLimit: 1000000 }
-      );
-      await transaction.wait();
-      console.log("done");
-      // await uniswapv2.swap(wethAddress, uniAddress, toWei('1'), toWei('0'), owner.address);
+      // const transaction = await uniswapv2.connect(owner).quickswap(
+      //   [wethAddress, daiAddress],
+      //   { gasLimit: 1000000, value:'1000' }
+      // );
+      const amountIn = 10n ** 18n;
+      const weth = await ethers.getContractAt("IWETH", wethAddress)
+      const dai = await ethers.getContractAt("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", daiAddress)  
+      await weth.connect(owner).deposit({value : amountIn});
+      await weth.connect(owner).approve(uniswapv2.address, amountIn);
+      await uniswapv2.swap(wethAddress, daiAddress, toWei('1'), toWei('0'), owner.address);
+      console.log("dai balance", toEther(await dai.balanceOf(owner.address)));
     });
   });
 });

@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.7.6;
 
 //import the ERC20 interface
 import "hardhat/console.sol";
+import "./interfaces/IWETH.sol";
+// import "@uniswap/v2-periphery/contracts/interfaces/IWETH.sol";
+
 
 interface IERC20 {
     function totalSupply() external view returns (uint256);
@@ -102,15 +105,19 @@ contract Uniswapv2 {
     }
 
 
-    function quickswap(address _tokenOut, address[] calldata path) public {
-      IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactETHForTokens(
-        1e18,
+    function quickswap(address[] calldata path) public payable {
+
+        IWETH(WETH).deposit();
+        IWETH(WETH).approve(UNISWAP_V2_ROUTER, msg.value);
+      IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactTokensForTokens(
+        msg.value,
+        0,
         path,
         msg.sender,
         block.timestamp
       );
-        uint256 balance = IERC20(_tokenOut).balanceOf(msg.sender);
-        console.log("HHH", balance);
+        // uint256 balance = IERC20(_tokenOut).balanceOf(msg.sender);
+        // console.log("HHH", balance);
     }
 
     //this swap function is used to trade from one token to another
