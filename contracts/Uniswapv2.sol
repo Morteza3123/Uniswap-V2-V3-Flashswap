@@ -106,18 +106,13 @@ contract Uniswapv2 {
 
 
     function quickswap(address[] calldata path) public payable {
-
-        IWETH(WETH).deposit();
-        IWETH(WETH).approve(UNISWAP_V2_ROUTER, msg.value);
-      IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactTokensForTokens(
-        msg.value,
+        
+      IUniswapV2Router(UNISWAP_V2_ROUTER).swapExactETHForTokens{value: msg.value}(
         0,
         path,
         msg.sender,
         block.timestamp
       );
-        // uint256 balance = IERC20(_tokenOut).balanceOf(msg.sender);
-        // console.log("HHH", balance);
     }
 
     //this swap function is used to trade from one token to another
